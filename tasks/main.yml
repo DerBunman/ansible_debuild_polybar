@@ -1,0 +1,12 @@
+# Build and install Polybar
+- name: "Checking polybar installation status."
+  shell: dpkg-query --showformat='dpkg --compare-versions "${Version}" "ge" "{{ debuild_polybar.git_branch }}"' -W polybar | sh
+  register: polybar_status
+  ignore_errors: true
+
+- name: 'Building polybar.'
+  import_tasks: polybar.yml
+  environment:
+    GITREV: '{{ debuild_polybar.git_branch }}'
+    GIT_URL: '{{ debuild_polybar.git_src }}'
+  when: polybar_status.rc != 0

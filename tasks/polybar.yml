@@ -1,0 +1,57 @@
+- name: 'Setup deb build environment'
+  import_role:
+    name: debuild
+
+- name: 'Ckeckout polybar sources {{ debuild.build_path }}'
+  git:
+    repo: '{{ debuild_polybar.git_src }}'
+    dest: '{{ debuild.build_path }}/polybar'
+    version: '{{ debuild_polybar.git_branch }}'
+    update: yes
+    clone: yes
+    force: yes
+
+- name: 'Copy debian dir'
+  copy:
+    src: polybar/debian
+    dest: '{{ debuild.build_path }}/polybar'
+
+- name: 'Generating debian/changelog'
+  command: /usr/local/bin/git_changelog.sh
+  args:
+      chdir: '{{ debuild.build_path }}/polybar'
+
+- name: 'Installing build deps'
+  command: mk-build-deps -i -t "apt-get -o Debug::pkgProblemResolver=yes --yes --no-install-recommends"
+  args:
+      chdir: '{{ debuild.build_path }}/polybar'
+
+- name: 'Building deb package'
+  command: dpkg-buildpackage -rfakeroot -uc -b
+  args:
+      chdir: '{{ debuild.build_path }}/polybar'
+
+- name: 'Removing build dependencies'
+  apt:
+    name: polybar-build-deps
+    state: absent
+    autoclean: yes
+    autoremove: yes
+
+- name: 'Determine deb name.'
+  raw: cd '{{ debuild.build_path }}/polybar' && echo "$(awk '/^Package:/ { print $2 }' debian/control)_$(dpkg-parsechangelog --show-field version)_$(dpkg-architecture -qDEB_BUILD_ARCH).deb"
+  register: deb
+
+- name: 'Set deb name to {{ deb.stdout }}'
+  set_fact:
+    deb='{{ debuild.build_path }}/{{ deb.stdout | trim }}'
+
+- name: 'Install a .deb package'
+  apt:
+    deb: '{{ deb }}'
+
+- name: 'Delete build dir'
+  file:
+    path: '{{ debuild.build_path }}'
+    state: absent
+

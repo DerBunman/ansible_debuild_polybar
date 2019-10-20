@@ -1,11 +1,11 @@
 # Build and install Polybar
 - name: "Checking polybar installation status."
-  shell: dpkg -s polybar | grep "Status: install ok installed"
+  shell: 'dpkg -s polybar | grep "Status: install ok installed"'
   register: polybar_installed
   ignore_errors: true
   changed_when: false
 
-- name: "Checking polybar installation status."
+- name: "Checking polybar installed version."
   shell: dpkg-query --showformat='dpkg --compare-versions "${Version}" "ge" "{{ debuild_polybar.git_branch }}"' -W polybar | sh
   register: polybar_status
   ignore_errors: true

@@ -21,7 +21,12 @@
   changed_when: false
 
 - name: 'Installing build deps'
-  command: mk-build-deps -i -t "apt-get -o Debug::pkgProblemResolver=yes --yes --no-install-recommends"
+  command: >
+    mk-build-deps 
+    -i 
+    -t "apt-get -o Debug::pkgProblemResolver=yes 
+    --yes 
+    --no-install-recommends"
   args:
       chdir: '{{ debuild.build_path }}/polybar'
   changed_when: false
@@ -41,7 +46,9 @@
   changed_when: false
 
 - name: 'Determine deb name.'
-  raw: cd '{{ debuild.build_path }}/polybar' && echo "$(awk '/^Package:/ { print $2 }' debian/control)_$(dpkg-parsechangelog --show-field version)_$(dpkg-architecture -qDEB_BUILD_ARCH).deb"
+  raw: >
+    cd '{{ debuild.build_path }}/polybar' 
+    && echo "$(awk '/^Package:/ { print $2 }' debian/control)_$(dpkg-parsechangelog --show-field version)_$(dpkg-architecture -qDEB_BUILD_ARCH).deb"
   register: deb
   changed_when: false
 

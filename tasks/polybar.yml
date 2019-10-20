@@ -17,7 +17,7 @@
 - name: 'Generating debian/changelog'
   command: /usr/local/bin/git_changelog.sh
   args:
-      chdir: '{{ debuild.build_path }}/polybar'
+    chdir: '{{ debuild.build_path }}/polybar'
   changed_when: false
 
 - name: 'Installing build deps'

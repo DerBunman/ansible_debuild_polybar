@@ -1,13 +1,15 @@
 # Build and install Polybar
-- name: "Collecting installed packages"
-  package_facts:
-    manager: "auto"
+- name: "Checking polybar installation status."
+  shell: dpkg -s polybar | grep "Status: install ok installed"
+  register: polybar_installed
+  ignore_errors: true
+  changed_when: false
 
 - name: "Checking polybar installation status."
   shell: dpkg-query --showformat='dpkg --compare-versions "${Version}" "ge" "{{ debuild_polybar.git_branch }}"' -W polybar | sh
   register: polybar_status
   ignore_errors: true
-  when: "'polybar' in ansible_facts.packages"
+  when: "polybar_installed.rc == 0"
   changed_when: false
 
 - name: 'Building polybar.'
@@ -15,5 +17,5 @@
   environment:
     GITREV: '{{ debuild_polybar.git_branch }}'
     GIT_URL: '{{ debuild_polybar.git_src }}'
-  when: "'polybar' not in ansible_facts.packages or polybar_status.rc != 0"
+  when: "polybar_installed.rc == 1 or polybar_status.rc != 0"
   changed_when: false

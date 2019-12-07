@@ -1,4 +1,4 @@
-- name: 'Ckeckout polybar sources {{ debuild.build_path }}'
+- name: 'Checkout polybar sources {{ debuild.build_path }}'
   git:
     repo: '{{ debuild_polybar.git_src }}'
     dest: '{{ debuild.build_path }}/polybar'

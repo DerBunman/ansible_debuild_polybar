@@ -1,0 +1,25 @@
+Description: Remove build flags from output of -vvv for reproducible builds
+Author: Samuel Henrique <sameuloph@debian.org>
+Forwarded: not-needed
+Index: polybar/src/settings.cpp.cmake
+===================================================================
+--- polybar.orig/src/settings.cpp.cmake
++++ polybar/src/settings.cpp.cmake
+@@ -51,10 +51,13 @@ void print_build_info(bool extended) {
+       (WITH_XRM               ? '+' : '-'),
+       (WITH_XCURSOR           ? '+' : '-'));
+     printf("\n");
+-    printf("Build type: @CMAKE_BUILD_TYPE@\n");
+-    printf("Compiler: @CMAKE_CXX_COMPILER@\n");
+-    printf("Compiler flags: @CMAKE_CXX_FLAGS@ ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} @cxx_flags_str@\n");
+-    printf("Linker flags: @CMAKE_EXE_LINKER_FLAGS@ ${CMAKE_EXE_LINKER_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} @cxx_linker_flags_str@\n");
++    printf("Debian package, build flags removed from output for build reproducibility\n");
++    printf("You can refer to the build logs of your package at:\n");
++    printf("https://buildd.debian.org/status/package.php?p=polybar\n");
++//  printf("Build type: @CMAKE_BUILD_TYPE@\n");
++//  printf("Compiler: @CMAKE_CXX_COMPILER@\n");
++//  printf("Compiler flags: @CMAKE_CXX_FLAGS@ ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} @cxx_flags_str@\n");
++//  printf("Linker flags: @CMAKE_EXE_LINKER_FLAGS@ ${CMAKE_EXE_LINKER_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} @cxx_linker_flags_str@\n");
+   }
+ }
+ // clang-format on
